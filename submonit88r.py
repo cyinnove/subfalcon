@@ -12,7 +12,6 @@ import logging
 logging.basicConfig(filename='error.log', level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
 
 BASE_URL = "https://crt.sh/?q={}&output=json"
-discord_webhook_url = "https://discord.com/api/webhooks/1052205480681951252/_hAFDr4MN8Z1iPsusHi0vFEb9Q_DtLAF-mnUGKO7ZSemNHP9OxjcN0i30gSVKZjdNPmb"
 old_subdomains_file = "old_subdomains.txt"
 
 def parser_error(errmsg):
@@ -26,6 +25,7 @@ def parse_args():
     parser._optionals.title = "OPTIONS"
     parser.add_argument('-l', '--domain_list', help='Specify a file containing a list of domains', required=True)
     parser.add_argument('-m', '--monitor', help='Monitor subdomains and send updates to Discord', action='store_true', required=False)
+    parser.add_argument('-w', '--webhook', help='Specify the Discord webhook URL', required=False)
     return parser.parse_args()
 
 def crtsh(domain):
@@ -71,13 +71,14 @@ def save_subdomains(file_path, subdomains):
     with open(file_path, 'w') as file:
         file.write('\n'.join(subdomains))
 
-def send_to_discord(message):
-    max_length = 2000
-    chunks = [message[i:i+max_length] for i in range(0, len(message), max_length)]
+def send_to_discord(webhook_url, message):
+    if webhook_url:
+        max_length = 2000
+        chunks = [message[i:i+max_length] for i in range(0, len(message), max_length)]
 
-    for chunk in chunks:
-        webhook = DiscordWebhook(url=discord_webhook_url, content=chunk)
-        webhook.execute()
+        for chunk in chunks:
+            webhook = DiscordWebhook(url=webhook_url, content=chunk)
+            webhook.execute()
 
 if __name__ == "__main__":
     args = parse_args()
@@ -105,7 +106,7 @@ if __name__ == "__main__":
                 # Send new subdomains to Discord
                 if new_subdomains:
                     message = f"New Subdomains found: {', '.join(new_subdomains)}"
-                    send_to_discord(message)
+                    send_to_discord(args.webhook, message)
 
                 # Save current subdomains to file
                 save_subdomains(old_subdomains_file, all_subdomains)
