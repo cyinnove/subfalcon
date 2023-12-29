@@ -28,15 +28,16 @@ def parse_args():
 def crtsh(domain):
     subdomains = set()
     wildcardsubdomains = set()
-    BASE_URL = "https://crt.sh/?q={}&output=json"
+    url = f"https://crt.sh/?q={domain}&output=json"
+    print(f"[#] Fetching Subdomains from crt.sh for {domain}")
 
     try:
-        response = requests.get(BASE_URL.format(domain), timeout=25)
+        response = requests.get(url, timeout=25)
         response.raise_for_status()  # Raise an HTTPError for bad responses
         content = response.content.decode('UTF-8')
 
         if content:
-            soup = BeautifulSoup(content, 'html.parser')
+            soup = BeautifulSoup(content, 'lxml')
             try:
                 jsondata = json.loads(soup.text)
                 for entry in jsondata:
@@ -50,10 +51,10 @@ def crtsh(domain):
                             elif subname:
                                 subdomains.add(subname)
             except json.JSONDecodeError as e:
-                print(f"Error decoding JSON for domain {domain}")
+                print(f"[!] Error decoding JSON for domain {domain} from {url} ")
 
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching subdomains for domain {domain}")
+        print(f"[!] Error fetching subdomains for domain {domain} from {url}")
 
     return subdomains, wildcardsubdomains
 
@@ -68,11 +69,20 @@ def load_subdomains(file_path):
 
 # Function for adding the subdomains to file  
 def add_newsubdomains(file_path, subdomains):
-    with open(file_path, 'a') as file:
-        file.write('\n'.join(subdomains))
+
+    print(f"[+] Adding the new subdomains to our Subdomains Database ! ")
+    
+    try:
+        with open(file_path, 'a') as file:
+            file.write('\n'.join(subdomains))
+    except:
+        print(f"[!] Error when adding new subdomains to our database")
 
 # Send data to Discord
 def send_to_discord(webhook_url, message):
+
+    print(f"[+] Sending New subdomains (if exists) to your Discord Server")
+
     if webhook_url:
         max_length = 2000
         chunks = [message[i:i+max_length] for i in range(0, len(message), max_length)]
@@ -82,8 +92,10 @@ def send_to_discord(webhook_url, message):
             webhook.execute()
 
 # Function to get subdomains from AlienVault OTX
-def alienvault(target_domain):
-    url = f"https://otx.alienvault.com/api/v1/indicators/domain/{target_domain}/passive_dns"
+def alienvault(domain):
+    url = f"https://otx.alienvault.com/api/v1/indicators/domain/{domain}/passive_dns"
+    print(f"[#] Fetching Subdomains from otx.alienvault.com for {domain}")
+
 
     try:
         response = requests.get(url)
@@ -95,16 +107,17 @@ def alienvault(target_domain):
             subdomains = [entry["hostname"] for entry in data["passive_dns"] if "hostname" in entry]
             return subdomains
         else:
-            print("No passive DNS data found.")
+            print("[X] No passive DNS data found.")
             return []
 
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching data from {url}: {e}")
+        print(f"[!] Error fetching data from {url}: {e}")
         return []
 
 # Function for getting subdomains from urlscan.io
 def urlscan(domain):
     url = f"https://urlscan.io/api/v1/search/?q={domain}"
+    print(f"[#] Fetching Subdomains from urlscan.io for {domain}")
 
     try:
         response =  requests.get(url)
@@ -115,14 +128,15 @@ def urlscan(domain):
             subdomains = [entry["domain"] for entry in data["results"] if "domain" in entry]
             return subdomains
         else:
-            print("No subdomains Found")
+            print("[X] No subdomains Found")
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching data from {url}: {e}")
+        print(f"[!] Error fetching data from {url}: {e}")
         return []
 
 # Getting subdomains from anubis 
 def anubis(domain):
     url = f"https://jldc.me/anubis/subdomains/{domain}"
+    print(f"[#] Fetching Subdomains from anubis for {domain}")
 
     try:
         response = requests.get(url)
@@ -136,13 +150,14 @@ def anubis(domain):
             return []
 
     except requests.RequestException as e:
-        print(f"Error Getting subdomains from {url}: {e}")
+        print(f"[!] Error Getting subdomains from {url}: {e}")
         return []
 
 
 # Function for Getting subdomains from hackertarget api
 def hackertarget(domain):
     url = f"https://api.hackertarget.com/hostsearch/?q={domain}"
+    print(f"[#] Fetching Subdomains from hackertarget.com for {domain}")
 
     try:
         response = requests.get(url)
@@ -153,16 +168,17 @@ def hackertarget(domain):
             subdomains = [line.split(",")[0] for line in data.splitlines()]
             return subdomains
         else:
-            print("No subdomains Found")
+            print("[X] No subdomains Found")
             return []
 
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching data from {url}: {e}")
+        print(f"[!] Error fetching data from {url}: {e}")
         return []
 
 # Function for getting subdomains from rapiddns.io
 def rapiddns(domain):
     url = f"https://rapiddns.io/subdomain/{domain}?full=1#result"
+    print(f"[#] Fetching Subdomains from rapiddns.io for {domain}")
 
     try:
         page = requests.get(url, verify=False)
@@ -180,11 +196,22 @@ def rapiddns(domain):
         return subdomains
 
     except requests.RequestException as e:
-        print(f"Error Getting subdomains from {url}: {e}")
+        print(f"[!] Error Getting subdomains from {url}: {e}")
         return []
 
 
 if __name__ == "__main__":
+
+    print('''
+                __                   _ __  ___  ___     
+      ___ __ __/ /  __ _  ___  ___  (_) /_( _ )( _ )____
+     (_-</ // / _ \/  ' \/ _ \/ _ \/ / __/ _  / _  / __/
+    /___/\_,_/_.__/_/_/_/\___/_//_/_/\__/\___/\___/_/   
+
+                                  By SALLAM (h0tak88r)
+    ''')
+
+
     args = parse_args()
 
     if args.monitor:
@@ -229,7 +256,7 @@ if __name__ == "__main__":
 
                 # Send new subdomains to Discord
                 if new_subdomains:
-                    message = f"New Subdomains found: {', '.join(new_subdomains)}"
+                    message = f"[+] New Subdomains found: {', '.join(new_subdomains)}"
                     send_to_discord(args.webhook, message)
 
                     # Add the new subdomains to the old subdomains file as it is like our DB
@@ -239,7 +266,7 @@ if __name__ == "__main__":
                 time.sleep(5 * 60 * 60)
 
             except Exception as e:
-                print(f"An error occurred: {e}")
+                print(f"[!] An error occurred: {e}")
 
     else:
         with open(args.domain_list, 'r') as domains_file:
@@ -285,4 +312,4 @@ if __name__ == "__main__":
     with open('Results.txt', 'w') as file:
         file.write('\n'.join(all_subdomains))
 
-    print("Subdomains enumeration completed. Results are saved in Results.txt.")
+    print("[+] Subdomains Enumeration completed, Results are saved in Results.txt.")
