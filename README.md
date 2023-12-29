@@ -4,9 +4,14 @@ A Python script for monitoring subdomains using the crt.sh certificate search.
 
 ## Features
 
-- Fetches subdomains for a given list of domains from crt.sh
+- Fetches subdomains for a given list of domains from:
+    1. crt.sh
+    2. hackertarget
+    3. anubis
+    4. Alienvault
+    5. rapiddns
+    6. urlscan.io
 - Monitors subdomains and sends updates to Discord (optional)
-- Logs errors to a file for debugging
 
 ## Prerequisites
 
