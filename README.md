@@ -19,7 +19,7 @@ This Python script allows you to monitor subdomains using the various passive re
 - Install required Python packages:
 
   ```bash
-  pip install requests beautifulsoup4 discord-webhook
+  pip install -r requirements.txt
   ```
 
 ## Usage
@@ -27,7 +27,7 @@ This Python script allows you to monitor subdomains using the various passive re
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/yourusername/submonit88r.git
+   git clone https://github.com/h0tak88r/submonit88r.git
    ```
 
 2. **Navigate to the project directory:**
