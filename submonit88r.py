@@ -50,11 +50,10 @@ def crtsh(domain):
                             elif subname:
                                 subdomains.add(subname)
             except json.JSONDecodeError as e:
-                print(f"Error decoding JSON for domain {domain}: {e}")
-                print(f"Response content: {content}")
+                print(f"Error decoding JSON for domain {domain}")
 
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching subdomains for domain {domain}: {e}")
+        print(f"Error fetching subdomains for domain {domain}")
 
     return subdomains, wildcardsubdomains
 
