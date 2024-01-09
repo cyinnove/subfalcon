@@ -1,72 +1,89 @@
-# Subdomain Monitor Script
+# Submonit88r
 
-This Python script allows you to monitor subdomains using the various passive resources. It fetches subdomains for a given list of domains from various sources, including crt.sh, hackertarget, anubis, Alienvault, rapiddns, and urlscan.io. Optionally, it can monitor subdomains and send updates to Discord.
+Submonit88r is a subdomain enumeration tool that allows you to discover and monitor subdomains for a given list of domains. It fetches subdomains from various sources, saves them to a SQLite database, and can notify updates via Discord.
+
+## Table of Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Options](#options)
+- [Examples](#examples)
+- [Contributing](#contributing)
+- [License](#license)
+- [Disclaimer](#disclaimer)
 
 ## Features
 
-- Fetches subdomains for a given list of domains from:
+- Subdomain enumeration from multiple sources.
     1. crt.sh
     2. hackertarget
     3. anubis
     4. Alienvault
     5. rapiddns
     6. urlscan.io
-- Monitors subdomains and sends updates to Discord (optional)
+- SQLite database to store discovered subdomains.
+- Discord integration for monitoring updates.
+- Easy-to-use command-line interface.
 
-## Prerequisites
+## Installation
 
-- Python 3.x
-- Install required Python packages:
-
-  ```bash
-  pip install -r requirements.txt
-  ```
-
-## Usage
-
-1. **Clone the repository:**
+1. Clone the repository:
 
    ```bash
-   git clone https://github.com/h0tak88r/submonit88r.git
+   git clone https://github.com/yourusername/submonit88r.git
    ```
 
-2. **Navigate to the project directory:**
+2. Navigate to the project directory:
 
    ```bash
    cd submonit88r
    ```
 
-3. **Create a virtual environment (optional but recommended):**
-
-   ```bash
-   python -m venv venv
-   source venv/bin/activate
-   ```
-
-4. **Install dependencies:**
+3. Install dependencies:
 
    ```bash
    pip install -r requirements.txt
    ```
 
-5. **Run the script:**
+## Usage
 
-   - To fetch subdomains:
-
-     ```bash
-     python submonit88r.py -l domains.txt
-     ```
-
-   - To monitor and send updates to Discord, provide the webhook URL:
-
-     ```bash
-     python submonit88r.py -l domains.txt -m -w YOUR_DISCORD_WEBHOOK_URL
-     ```
+```bash
+python submonit88r.py -l domains.txt -w "YOUR_DISCORD_WEBHOOK_URL" -m
+```
 
 ## Options
 
 - `-l` or `--domain_list`: Specify a file containing a list of domains.
-- `-m` or `--monitor`: Monitor subdomains and send updates to Discord (optional).
-- `-w` or `--webhook_url`: Discord Webhook URL for sending updates (required when using `-m`).
+- `-m` or `--monitor`: Monitor subdomains and send updates to Discord.
+- `-w` or `--webhook`: Specify the Discord webhook URL.
 
-For any issues or improvements, please [create an issue](https://github.com/h0tak88r/submonit88r/issues), or open pull request.
+## Examples
+
+- Basic usage:
+
+  ```bash
+  python submonit88r.py -l domains.txt
+  ```
+
+- Monitor and send updates to Discord:
+
+  ```bash
+  python submonit88r.py -l domains.txt -m -w "YOUR_DISCORD_WEBHOOK_URL"
+  ```
+- Run in virtual environment\
+	```python
+	python3 -m venv venv
+	source venv/bin/activate
+	```
+## Contributing
+
+Feel free to contribute by opening issues or submitting pull requests. Please follow the [Contributing Guidelines](CONTRIBUTING.md).
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+## Disclaimer
+
+Use this tool responsibly and only on systems you have permission to scan. The authors are not responsible for any misuse or damage caused by this tool.
