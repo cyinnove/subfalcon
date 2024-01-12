@@ -31,7 +31,7 @@ Submonit88r is a subdomain enumeration tool that allows you to discover and moni
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/submonit88r.git
+   git clone https://github.com/h0tak88r/submonit88r.git
    ```
 
 2. Navigate to the project directory:
