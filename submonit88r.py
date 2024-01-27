@@ -5,74 +5,29 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import time
-import sqlite3
 from discord_webhook import DiscordWebhook
-import urllib3
 
-# Disable urllib3 warnings
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-DB_FILE = "subdomains_database.db"
-
+requests.packages.urllib3.disable_warnings()
+SUBS_DB = "subdomains_database.txt"
 
 def parser_error(errmsg):
     print("Usage: python3 " + sys.argv[0] + " [Options] use -h for help")
     print("Error: " + errmsg)
     sys.exit()
 
-
 def parse_args():
     parser = argparse.ArgumentParser(epilog='\tExample: \r\npython3 ' + sys.argv[0] + " -l domains.txt")
     parser.error = parser_error
     parser._optionals.title = "OPTIONS"
     parser.add_argument('-l', '--domain_list', help='Specify a file containing a list of domains', required=True)
-    parser.add_argument('-m', '--monitor', help='Monitor subdomains and send updates to Discord', action='store_true',
-                        required=False)
+    parser.add_argument('-m', '--monitor', help='Monitor subdomains and send updates to Discord', action='store_true', required=False)
     parser.add_argument('-w', '--webhook', help='Specify the Discord webhook URL', required=False)
     return parser.parse_args()
 
-
-def init_database():
-    try:
-        conn = sqlite3.connect(DB_FILE)
-        cursor = conn.cursor()
-        cursor.execute('''CREATE TABLE IF NOT EXISTS subdomains (subdomain TEXT)''')
-        conn.commit()
-        conn.close()
-        print("[+] Database initialized successfully.")
-    except Exception as e:
-        print(f"[!] Error initializing the database: {e}")
-
-
-def add_subdomains_to_db(subdomains):
-    try:
-        conn = sqlite3.connect(DB_FILE)
-        cursor = conn.cursor()
-        for subdomain in subdomains:
-            cursor.execute("INSERT INTO subdomains (subdomain) VALUES (?)", (subdomain,))
-        conn.commit()
-        conn.close()
-        print(f"[+] Added {len(subdomains)} subdomains to the database.")
-    except Exception as e:
-        print(f"[!] Error adding subdomains to the database: {e}")
-
-
-def get_subdomains_from_db():
-    try:
-        conn = sqlite3.connect(DB_FILE)
-        cursor = conn.cursor()
-        cursor.execute("SELECT subdomain FROM subdomains")
-        subdomains = set(row[0] for row in cursor.fetchall())
-        conn.close()
-        print("[+] Retrieved subdomains from the database.")
-        return subdomains
-    except Exception as e:
-        print(f"[!] Error retrieving subdomains from the database: {e}")
-        return set()
-
-
-def fetch_subdomains_from_crtsh(domain):
+# Function Getting subdomains from crt.sh !!
+def crtsh(domain):
     subdomains = set()
-    wildcard_subdomains = set()
+    wildcardsubdomains = set()
     url = f"https://crt.sh/?q={domain}&output=json"
     print(f"[#] Fetching Subdomains from crt.sh for {domain}")
 
@@ -84,15 +39,15 @@ def fetch_subdomains_from_crtsh(domain):
         if content:
             soup = BeautifulSoup(content, 'lxml')
             try:
-                json_data = json.loads(soup.text)
-                for entry in json_data:
+                jsondata = json.loads(soup.text)
+                for entry in jsondata:
                     name_value = entry.get('name_value', '')
                     if '\n' in name_value:
                         subname_value = name_value.split('\n')
                         for subname in subname_value:
                             subname = subname.strip()  # Remove leading/trailing spaces
                             if subname and '*' in subname:
-                                wildcard_subdomains.add(subname)
+                                wildcardsubdomains.add(subname)
                             elif subname:
                                 subdomains.add(subname)
             except json.JSONDecodeError as e:
@@ -101,24 +56,46 @@ def fetch_subdomains_from_crtsh(domain):
     except requests.exceptions.RequestException as e:
         print(f"[!] Error fetching subdomains for domain {domain} from {url}")
 
-    return subdomains, wildcard_subdomains
+    return subdomains, wildcardsubdomains
 
+# Loading subdomains from file for further operations
+def load_subdomains(file_path):
+    try:
+        with open(file_path, 'r') as file:
+            subdomains = file.read().splitlines()
+            return set(subdomains)
+    except FileNotFoundError:
+        return set()
 
+# Function for adding the subdomains to file  
+def add_newsubdomains(file_path, subdomains):
+
+    print(f"[+] Adding the new subdomains to our Subdomains Database ! ")
+    
+    try:
+        with open(file_path, 'a') as file:
+            file.write('\n'.join(subdomains))
+    except:
+        print(f"[!] Error when adding new subdomains to our database")
+
+# Send data to Discord
 def send_to_discord(webhook_url, message):
+
     print(f"[+] Sending New subdomains (if exists) to your Discord Server")
 
     if webhook_url:
         max_length = 2000
-        chunks = [message[i:i + max_length] for i in range(0, len(message), max_length)]
+        chunks = [message[i:i+max_length] for i in range(0, len(message), max_length)]
 
         for chunk in chunks:
             webhook = DiscordWebhook(url=webhook_url, content=chunk)
             webhook.execute()
 
-
-def fetch_subdomains_from_alienvault(domain):
+# Function to get subdomains from AlienVault OTX
+def alienvault(domain):
     url = f"https://otx.alienvault.com/api/v1/indicators/domain/{domain}/passive_dns"
     print(f"[#] Fetching Subdomains from otx.alienvault.com for {domain}")
+
 
     try:
         response = requests.get(url)
@@ -137,17 +114,17 @@ def fetch_subdomains_from_alienvault(domain):
         print(f"[!] Error fetching data from {url}: {e}")
         return []
 
-
-def fetch_subdomains_from_urlscan(domain):
+# Function for getting subdomains from urlscan.io
+def urlscan(domain):
     url = f"https://urlscan.io/api/v1/search/?q={domain}"
     print(f"[#] Fetching Subdomains from urlscan.io for {domain}")
 
     try:
-        response = requests.get(url)
+        response =  requests.get(url)
         response.raise_for_status()
         data = response.json()
 
-        if "results" in data:
+        if "results" in data :
             subdomains = [entry["domain"] for entry in data["results"] if "domain" in entry]
             return subdomains
         else:
@@ -156,8 +133,8 @@ def fetch_subdomains_from_urlscan(domain):
         print(f"[!] Error fetching data from {url}: {e}")
         return []
 
-
-def fetch_subdomains_from_anubis(domain):
+# Getting subdomains from anubis 
+def anubis(domain):
     url = f"https://jldc.me/anubis/subdomains/{domain}"
     print(f"[#] Fetching Subdomains from anubis for {domain}")
 
@@ -177,7 +154,8 @@ def fetch_subdomains_from_anubis(domain):
         return []
 
 
-def fetch_subdomains_from_hackertarget(domain):
+# Function for Getting subdomains from hackertarget api
+def hackertarget(domain):
     url = f"https://api.hackertarget.com/hostsearch/?q={domain}"
     print(f"[#] Fetching Subdomains from hackertarget.com for {domain}")
 
@@ -196,9 +174,9 @@ def fetch_subdomains_from_hackertarget(domain):
     except requests.exceptions.RequestException as e:
         print(f"[!] Error fetching data from {url}: {e}")
         return []
-
-
-def fetch_subdomains_from_rapiddns(domain):
+        
+# Function for getting subdomains from rapiddns.io
+def rapiddns(domain):
     url = f"https://rapiddns.io/subdomain/{domain}?full=1#result"
     print(f"[#] Fetching Subdomains from rapiddns.io for {domain}")
 
@@ -208,12 +186,16 @@ def fetch_subdomains_from_rapiddns(domain):
 
         subdomains = []
         website_table = soup.find("table", {"class": "table table-striped table-bordered"})
-        website_table_items = website_table.find_all('tbody')
-        for tbody in website_table_items:
-            tr = tbody.find_all('tr')
-            for td in tr:
-                subdomain = td.find_all('td')[0].text.strip()
-                subdomains.append(subdomain)
+
+        if website_table:
+            website_table_items = website_table.find_all('tbody')
+            for tbody in website_table_items:
+                tr = tbody.find_all('tr')
+                for td in tr:
+                    subdomain = td.find_all('td')[0].text.strip()
+                    subdomains.append(subdomain)
+        else:
+            print("[X] No table element found on the page.")
 
         return subdomains
 
@@ -222,7 +204,8 @@ def fetch_subdomains_from_rapiddns(domain):
         return []
 
 
-def main():
+if __name__ == "__main__":
+
     print('''
                 __                   _ __  ___  ___     
       ___ __ __/ /  __ _  ___  ___  (_) /_( _ )( _ )____
@@ -232,8 +215,8 @@ def main():
                                   By SALLAM (h0tak88r)
     ''')
 
+
     args = parse_args()
-    init_database()
 
     if args.monitor:
         while True:
@@ -242,35 +225,35 @@ def main():
                     domains = domains_file.read().splitlines()
 
                 all_subdomains = set()
-                all_wildcard_subdomains = set()
+                all_wildcardsubdomains = set()
 
                 for domain in domains:
-                    subdomains, wildcard_subdomains = fetch_subdomains_from_crtsh(domain)
+                    subdomains, wildcardsubdomains = crtsh(domain)
                     all_subdomains.update(subdomains)
-                    all_wildcard_subdomains.update(wildcard_subdomains)
+                    all_wildcardsubdomains.update(wildcardsubdomains)
 
                     # Get subdomains from AlienVault OTX
-                    otx_subdomains = fetch_subdomains_from_alienvault(domain)
+                    otx_subdomains = alienvault(domain)
                     all_subdomains.update(otx_subdomains)
 
                     # Get subdomains from urlscan.io
-                    urlscan_subdomains = fetch_subdomains_from_urlscan(domain)
+                    urlscan_subdomains = urlscan(domain)
                     all_subdomains.update(urlscan_subdomains)
 
-                    # Get subdomains from anubis
-                    anubis_subdomains = fetch_subdomains_from_anubis(domain)
-                    all_subdomains.update(anubis_subdomains)
+                    # Get subdomains from anubis 
+                    anubis_subdomains = anubis(domain)
+                    all_subdomains.update(anubis_subdomains)  
 
-                    # Get subdomains from hackertarget
-                    hackertarget_subdomains = fetch_subdomains_from_hackertarget(domain)
-                    all_subdomains.update(hackertarget_subdomains)
+                    # Get subdomains from hackertarget 
+                    hackertarget_subdomains = hackertarget(domain)
+                    all_subdomains.update(hackertarget_subdomains)  
 
                     # Get subdomains from rapiddns.io
-                    rapiddns_subdomains = fetch_subdomains_from_rapiddns(domain)
-                    all_subdomains.update(rapiddns_subdomains)
+                    rapiddns_subdomains = rapiddns(domain)
+                    all_subdomains.update(rapiddns_subdomains) 
 
-                # Load old subdomains from the database
-                old_subdomains = get_subdomains_from_db()
+                # Load old subdomains
+                old_subdomains = load_subdomains(SUBS_DB)
 
                 # Find new subdomains
                 new_subdomains = all_subdomains - old_subdomains
@@ -280,11 +263,11 @@ def main():
                     message = f"[+] New Subdomains found: {', '.join(new_subdomains)}"
                     send_to_discord(args.webhook, message)
 
-                    # Add the new subdomains to the database
-                    add_subdomains_to_db(new_subdomains)
+                    # Add the new subdomains to the old subdomains file as it is like our DB
+                    add_newsubdomains(SUBS_DB, new_subdomains)
 
-                    # Wait for 5 hours before the next iteration
-                    time.sleep(5 * 60 * 60)
+                # Wait for 5 hours before the next iteration
+                time.sleep(5 * 60 * 60)
 
             except Exception as e:
                 print(f"[!] An error occurred: {e}")
@@ -294,47 +277,43 @@ def main():
             domains = domains_file.read().splitlines()
 
         all_subdomains = set()
-        all_wildcard_subdomains = set()
+        all_wildcardsubdomains = set()
 
         for domain in domains:
-            subdomains, wildcard_subdomains = fetch_subdomains_from_crtsh(domain)
+            subdomains, wildcardsubdomains = crtsh(domain)
             all_subdomains.update(subdomains)
-            all_wildcard_subdomains.update(wildcard_subdomains)
+            all_wildcardsubdomains.update(wildcardsubdomains)
 
             # Get subdomains from AlienVault OTX
-            otx_subdomains = fetch_subdomains_from_alienvault(domain)
+            otx_subdomains = alienvault(domain)
             all_subdomains.update(otx_subdomains)
 
             # Get subdomains from urlscan.io
-            urlscan_subdomains = fetch_subdomains_from_urlscan(domain)
+            urlscan_subdomains = urlscan(domain)
             all_subdomains.update(urlscan_subdomains)
 
-            # Get subdomains from anubis
-            anubis_subdomains = fetch_subdomains_from_anubis(domain)
+            # Get subdomains from anubis 
+            anubis_subdomains = anubis(domain)
             all_subdomains.update(anubis_subdomains)
 
-            # Get subdomains from hackertarget
-            hackertarget_subdomains = fetch_subdomains_from_hackertarget(domain)
-            all_subdomains.update(hackertarget_subdomains)
+            # Get subdomains from hackertarget 
+            hackertarget_subdomains = hackertarget(domain)
+            all_subdomains.update(hackertarget_subdomains) 
 
             # Get subdomains from rapiddns.io
-            rapiddns_subdomains = fetch_subdomains_from_rapiddns(domain)
+            rapiddns_subdomains = rapiddns(domain)
             all_subdomains.update(rapiddns_subdomains)
 
-        # Load old subdomains from the database
-        old_subdomains = get_subdomains_from_db()
+        # Load old subdomains
+        old_subdomains = load_subdomains(SUBS_DB)
 
         # Find new subdomains
         new_subdomains = all_subdomains - old_subdomains
 
-        # Add the new subdomains to the database
-        add_subdomains_to_db(new_subdomains)
+        # Add the new subdomains to the old subdomains file as it is like our DB
+        add_newsubdomains(SUBS_DB, new_subdomains)
 
     with open('Results.txt', 'w') as file:
         file.write('\n'.join(all_subdomains))
 
     print("[+] Subdomains Enumeration completed, Results are saved in Results.txt.")
-
-
-if __name__ == "__main__":
-    main()
