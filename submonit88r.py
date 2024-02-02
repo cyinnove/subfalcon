@@ -199,7 +199,7 @@ def fetch_subdomains_from_hackertarget(domain):
 
 
 # Function for getting subdomains from rapiddns.io
-def rapiddns(domain):
+def fetch_subdomains_from_rapiddns(domain):
     url = f"https://rapiddns.io/subdomain/{domain}?full=1#result"
     print(f"[#] Fetching Subdomains from rapiddns.io for {domain}")
 
