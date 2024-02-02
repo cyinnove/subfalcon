@@ -238,6 +238,7 @@ def main():
 
     args = parse_args()
     init_database()
+    start_time = time.time()
 
     if args.monitor:
         while True:
@@ -336,8 +337,9 @@ def main():
 
     with open('Results.txt', 'w') as file:
         file.write('\n'.join(all_subdomains))
-
-    print("[+] Subdomains Enumeration completed, Results are saved in Results.txt.")
+    
+    elapsed_time = time.time() - start_time
+    print(f"[+] Subdomains Enumeration completed in {elapsed_time:.2f} seconds. Results are saved in Results.txt.")
 
 
 if __name__ == "__main__":
