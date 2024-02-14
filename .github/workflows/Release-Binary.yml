@@ -1,0 +1,51 @@
+name: 🎉 Release Binary
+
+on:
+  push:
+    tags:
+      - v*
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Check out code"
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: "Set up Go"
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16
+
+      - name: "Build and Release Binary"
+        run: |
+          go build -o myBinary
+          # Include any additional steps for building and preparing your binary
+          # For example, you might want to run tests or build for different architectures
+
+      - name: "Create Release on GitHub"
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Release of version ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: "Upload Binary to Release"
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./myBinary
+          asset_name: myBinary
+          asset_content_type: application/octet-stream
