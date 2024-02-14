@@ -1,4 +1,4 @@
-module goMonit88r
+module github.com/h0tak88r/goMonit88r
 
 go 1.16
 
