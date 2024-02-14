@@ -27,29 +27,14 @@ Submonit88r is a subdomain enumeration tool that allows you to discover and moni
 - Easy-to-use command-line interface.
 
 ## Installation
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/h0tak88r/submonit88r.git
-   ```
-
-2. Navigate to the project directory:
-
-   ```bash
-   cd submonit88r
-   ```
-
-3. Install dependencies:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
+You can install goMonit88r using the following command: 
+```bash
+go install github.com/h0tak88r/goMonit88r@latest
+```
 ## Usage
 
 ```bash
-python submonit88r.py -l domains.txt -w "YOUR_DISCORD_WEBHOOK_URL" -m
+submonit88r -l domains.txt -w "YOUR_DISCORD_WEBHOOK_URL" -m
 ```
 
 ## Options
@@ -63,22 +48,22 @@ python submonit88r.py -l domains.txt -w "YOUR_DISCORD_WEBHOOK_URL" -m
 - Basic usage:
 
   ```bash
-  python submonit88r.py -l domains.txt
+  submonit88r -l domains.txt
   ```
 
 - Monitor and send updates to Discord:
-
   ```bash
-  python submonit88r.py -l domains.txt -m -w "YOUR_DISCORD_WEBHOOK_URL"
+  submonit88r -l domains.txt -m -w "YOUR_DISCORD_WEBHOOK_URL"
   ```
-- Run in virtual environment\
-	```python
-	python3 -m venv venv
-	source venv/bin/activate
-	```
+
+- Monitor New Subdomains 
+```bash
+submonit88r -l domains.txt -m
+```
+
 ## Contributing
 
-Feel free to contribute by opening issues or submitting pull requests. Please follow the [Contributing Guidelines](CONTRIBUTING.md).
+Feel free to contribute by opening issues or submitting pull requests.
 
 ## License
 
