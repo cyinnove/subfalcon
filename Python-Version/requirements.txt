@@ -1,0 +1,8 @@
+beautifulsoup4==4.12.2
+charset-normalizer==3.3.2
+discord-webhook==1.3.0
+idna==3.6
+lxml==4.9.4
+requests==2.31.0
+soupsieve==2.5
+urllib3==2.1.0
