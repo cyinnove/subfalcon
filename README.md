@@ -27,9 +27,9 @@ Submonit88r is a subdomain enumeration tool that allows you to discover and moni
 - Easy-to-use command-line interface.
 
 ## Installation
-You can install goMonit88r using the following command: 
+You can install subMonit88r using the following command: 
 ```bash
-go install github.com/h0tak88r/goMonit88r@latest
+go install github.com/h0tak88r/subMonit88r@latest
 ```
 ## Usage
 
