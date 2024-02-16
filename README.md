@@ -53,7 +53,7 @@ submonit88r -l domains.txt -w "YOUR_DISCORD_WEBHOOK_URL" -m
 
 - Monitor and send updates to Discord:
   ```bash
-  submonit88r -l domains.txt -m -w "YOUR_DISCORD_WEBHOOK_URL"
+  subMonit88r -l domains.txt -m -w "YOUR_DISCORD_WEBHOOK_URL"
   ```
 
 - Monitor New Subdomains 
