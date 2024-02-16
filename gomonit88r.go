@@ -67,10 +67,10 @@ var monitorInterval = 10 * time.Hour
 
 func printLogo() {
 	fmt.Println(`
-        ┳┳┓    • ┏┓┏┓  
-    ┏┓┏┓┃┃┃┏┓┏┓┓╋┣┫┣┫┏┓
-    ┗┫┗┛┛ ┗┗┛┛┗┗┗┗┛┗┛┛ 
-     ┛    by sallam(h0tak88r)             
+		┏┓  ┓ ┳┳┓    • ┏┓┏┓  
+		┗┓┓┏┣┓┃┃┃┏┓┏┓┓╋┣┫┣┫┏┓
+		┗┛┗┻┗┛┛ ┗┗┛┛┗┗┗┗┛┗┛┛ 
+				by sallam(h0tak88r)
 	`)
 
 }
@@ -83,7 +83,6 @@ func main() {
 }
 
 func run(cmd *cobra.Command, args []string) {
-	go printLogo()
 	go initDatabase()
 
 	if cfg.Monitor {
