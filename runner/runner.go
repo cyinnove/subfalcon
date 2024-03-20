@@ -142,12 +142,13 @@ func fetchSubdomainsFromSources(domain string) []string {
 	}
 
 	// Fetch subdomains from each source concurrently
-	wg.Add(5)
+	wg.Add(6)
 	go fetch(subber.Anubis, "Anubis jdlc.me", domain)
 	go fetch(subber.UrlScan, "UrlScan", domain)
 	go fetch(subber.CrtSh, "CrtSh", domain)
 	go fetch(subber.HackerTarget, "HackerTarget", domain)
 	go fetch(subber.Otx, "Otx", domain)
+	go fetch(subber.RapidDNS, "Otx", domain)
 
 	wg.Wait()
 
