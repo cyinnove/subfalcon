@@ -11,9 +11,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/h0tak88r/subMonit88r/config"
-	"github.com/h0tak88r/subMonit88r/pkg/db"
-	"github.com/h0tak88r/subMonit88r/pkg/sub88r"
+	"github.com/h0tak88r/subfalcon/config"
+	"github.com/h0tak88r/subfalcon/pkg/db"
+	"github.com/h0tak88r/subfalcon/pkg/sub88r"
 )
 
 var cfg = config.GetConfig()
@@ -68,7 +68,7 @@ func PassiveSubdomainEnumeration() {
 
 	writeSubdomainsToFile(config.ResultsFileName, allSubdomains)
 
-	fmt.Println("[+] Subdomains Enumeration completed, Results are saved in subMonit88rResults.txt.")
+	fmt.Println("[+] Subdomains Enumeration completed, Results are saved in subfalcon Results.txt.")
 
 	if len(newSubdomains) > 0 {
 		fmt.Printf("[+] %d new subdomains discovered:\n", len(newSubdomains))
