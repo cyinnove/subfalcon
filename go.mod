@@ -1,4 +1,4 @@
-module github.com/h0tak88r/subMonit88r
+module github.com/h0tak88r/subfalcon
 
 go 1.16
 
