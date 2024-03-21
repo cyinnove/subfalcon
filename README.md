@@ -1,6 +1,6 @@
-# subMonit88r
+# subfalcon
 
-subMonit88r is a subdomain enumeration tool that allows you to discover and monitor subdomains for a given list of domains. It fetches subdomains from various sources, saves them to a SQLite database, and can notify updates via Discord.
+subfalcon is a subdomain enumeration tool that allows you to discover and monitor subdomains for a given list of domains. It fetches subdomains from various sources, saves them to a SQLite database, and can notify updates via Discord.
 
 ## Table of Contents
 
@@ -27,14 +27,14 @@ subMonit88r is a subdomain enumeration tool that allows you to discover and moni
 - Easy-to-use command-line interface.
 
 ## Installation
-You can install subMonit88r using the following command: 
+You can install subfalcon using the following command: 
 ```bash
-go install github.com/h0tak88r/subMonit88r/cmd/subMonit88r@latest
+go install github.com/h0tak88r/subfalcon/cmd/subfalcon@latest
 ```
 ## Usage
 
 ```bash
-subMonit88r -l domains.txt -w "YOUR_DISCORD_WEBHOOK_URL" -m
+subfalcon -l domains.txt -w "YOUR_DISCORD_WEBHOOK_URL" -m
 ```
 
 ## Options
@@ -48,17 +48,17 @@ subMonit88r -l domains.txt -w "YOUR_DISCORD_WEBHOOK_URL" -m
 - Basic usage:
 
   ```bash
-  subMonit88r -l domains.txt
+  subfalcon -l domains.txt
   ```
 
 - Monitor and send updates to Discord:
   ```bash
-  subMonit88r -l domains.txt -m -w "YOUR_DISCORD_WEBHOOK_URL"
+  subfalcon -l domains.txt -m -w "YOUR_DISCORD_WEBHOOK_URL"
   ```
 
 - Monitor New Subdomains 
 ```bash
-subMonit88r -l domains.txt -m
+subfalcon -l domains.txt -m
 ```
 
 ## Contributing
