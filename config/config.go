@@ -30,8 +30,10 @@ var ErrMissingDomainListFlag = errors.New("missing domain list flag")
 
 func PrintLogo() {
 	fmt.Println(`
-		🆂🆄🅱🅵🅰🅻🅲🅾🅽🔭
-					By: @h0tak88r @zomasec
+	┏┓  ┓ ┏  ┓       
+	┗┓┓┏┣┓╋┏┓┃┏┏┓┏┓  ·˚ * 🔭 ⋆ .☆ 
+	┗┛┗┻┗┛┛┗┻┗┗┗┛┛┗ 
+			By: @h0tak88r @zomasec
 	`)
 }
 
