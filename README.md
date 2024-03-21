@@ -29,7 +29,7 @@ subMonit88r is a subdomain enumeration tool that allows you to discover and moni
 ## Installation
 You can install subMonit88r using the following command: 
 ```bash
-go install github.com/h0tak88r/subMonit88r@latest
+go install github.com/h0tak88r/subMonit88r/cmd/subMonit88r@latest
 ```
 ## Usage
 
