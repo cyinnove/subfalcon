@@ -76,3 +76,4 @@ Use this tool responsibly and only on systems you have permission to scan. The a
 - Add to monitor using telegram
 - Add more resources to monitor subdomains
 - Add flags to customize monitoring's time
+- Add councurrey for domains
