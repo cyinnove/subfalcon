@@ -10,7 +10,7 @@ import (
 // Exported Constants
 const (
 	DbFile          = "subdomains_database.db"
-	ResultsFileName = "subMonit88rResults.txt"
+	ResultsFileName = "subfalconResults.txt"
 	MonitorInterval = 5 * time.Hour
 )
 
