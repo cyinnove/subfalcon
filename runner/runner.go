@@ -34,21 +34,7 @@ func Run() {
 	}
 }
 
-func PrintLogo() {
-	fmt.Println(`
-
-            _      __      _                 
-           | |    / _|    | |                
-  ___ _   _| |__ | |_ __ _| | ___ ___  _ __  
- / __| | | | '_ \|  _/ _` | |/ __/ _ \| '_ \ 
- \__ \ |_| | |_) | || (_| | | (_| (_) | | | |
- |___/\__,_|_.__/|_| \__,_|_|\___\___/|_| |_|
-                                             
-              developed by: @h0tak88r @zomasec
- 
-	`)
-}
-
+// PassiveSubdomainEnumeration does passive subdomain enumeration from different resources concurrently
 func PassiveSubdomainEnumeration() {
 	domains, err := readDomainsFromFile(cfg.DomainList)
 	if err != nil {

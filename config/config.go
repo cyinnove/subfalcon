@@ -2,6 +2,7 @@ package config
 
 import (
 	"errors"
+	"fmt"
 	"sync"
 	"time"
 )
@@ -26,6 +27,13 @@ var (
 )
 
 var ErrMissingDomainListFlag = errors.New("missing domain list flag")
+
+func PrintLogo() {
+	fmt.Println(`
+		🆂🆄🅱🅵🅰🅻🅲🅾🅽🔭
+					By: @h0tak88r @zomasec
+	`)
+}
 
 // SetConfig sets the configuration options and returns a pointer to the updated Config.
 func SetConfig(domainList string, webhook string, monitor bool) *Config {

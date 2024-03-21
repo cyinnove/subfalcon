@@ -11,7 +11,7 @@ import (
 
 func main() {
 
-	runner.PrintLogo()
+	config.PrintLogo()
 
 	// Define flag variables
 	var domainList string
