@@ -78,3 +78,6 @@ Use this tool responsibly and only on systems you have permission to scan. The a
 - Add flags to customize monitoring's time
 - Add councurrey for domains
 - Improve the logs
+
+>If you enjoy what we do, please support us
+>Buy Me Ko-fi! https://ko-fi.com/h0tak88r
