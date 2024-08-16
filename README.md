@@ -29,7 +29,7 @@ subfalcon is a subdomain enumeration tool that allows you to discover and monito
 ## Installation
 You can install subfalcon using the following command: 
 ```bash
-go install github.com/h0tak88r/subfalcon/cmd/subfalcon@latest
+go install github.com/cyinnove/subfalcon/cmd/subfalcon@latest
 ```
 ## Usage
 
