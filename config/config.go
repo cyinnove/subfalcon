@@ -16,9 +16,10 @@ const (
 
 // Config holds the configuration options.
 type Config struct {
-	DomainList string
-	Webhook    string
-	Monitor    bool
+	DomainList   string
+	Webhook      string
+	Monitor      bool
+	SingleDomain string // New field to store the single domain
 }
 
 var (
@@ -26,8 +27,11 @@ var (
 	configLock sync.Mutex
 )
 
-var ErrMissingDomainListFlag = errors.New("missing domain list flag")
+var (
+	ErrMissingDomainListFlag = errors.New("missing domain list flag or single domain")
+)
 
+// PrintLogo prints the logo.
 func PrintLogo() {
 	fmt.Println(`
 	┏┓  ┓ ┏  ┓       
@@ -38,14 +42,15 @@ func PrintLogo() {
 }
 
 // SetConfig sets the configuration options and returns a pointer to the updated Config.
-func SetConfig(domainList string, webhook string, monitor bool) *Config {
+func SetConfig(domainList, webhook string, monitor bool, singleDomain string) *Config {
 	configLock.Lock()
 	defer configLock.Unlock()
 
 	cfg = Config{
-		DomainList: domainList,
-		Webhook:    webhook,
-		Monitor:    monitor,
+		DomainList:   domainList,
+		Webhook:      webhook,
+		Monitor:      monitor,
+		SingleDomain: singleDomain, // Set the single domain in the config
 	}
 
 	return &cfg
@@ -61,8 +66,9 @@ func GetConfig() *Config {
 
 // ValidateFlags validates the required flags.
 func ValidateFlags() error {
-	if cfg.DomainList == "" {
-		return errors.New("missing domain list flag")
+	// Ensure either a domain list or a single domain is provided
+	if cfg.DomainList == "" && cfg.SingleDomain == "" {
+		return ErrMissingDomainListFlag
 	}
 	return nil
 }
