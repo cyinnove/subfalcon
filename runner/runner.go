@@ -20,17 +20,52 @@ var cfg = config.GetConfig()
 
 // Run is the main entry point for the runner package.
 func Run() {
-	// Start running
 	go db.InitDB(config.DbFile)
 
 	if cfg.Monitor {
 		for {
-			fmt.Println("[+] Monitoring subdomains in domains.txt file......")
-			PassiveSubdomainEnumeration()
+			if cfg.SingleDomain != "" {
+				fmt.Println("[+] Monitoring single domain...")
+				ProcessSingleDomain(cfg.SingleDomain)
+			} else {
+				fmt.Println("[+] Monitoring subdomains in domains.txt file...")
+				PassiveSubdomainEnumeration()
+			}
 			time.Sleep(config.MonitorInterval)
 		}
 	} else {
-		PassiveSubdomainEnumeration()
+		if cfg.SingleDomain != "" {
+			ProcessSingleDomain(cfg.SingleDomain)
+		} else {
+			PassiveSubdomainEnumeration()
+		}
+	}
+}
+
+// ProcessSingleDomain handles a single domain passed via the -d flag.
+func ProcessSingleDomain(domain string) {
+	fmt.Printf("[+] Processing single domain: %s\n", domain)
+
+	subdomains := fetchSubdomainsFromSources(domain)
+
+	oldSubdomains := db.Getsubdomains(config.DbFile)
+	newSubdomains := difference(subdomains, oldSubdomains)
+
+	writeSubdomainsToFile(config.ResultsFileName, subdomains)
+
+	fmt.Println("[+] Subdomains Enumeration completed, Results are saved in subfalconResults.txt.")
+
+	if len(newSubdomains) > 0 {
+		fmt.Printf("[+] %d new subdomains discovered:\n", len(newSubdomains))
+		db.AddSubdmomains(newSubdomains, config.DbFile)
+
+		for _, subdomain := range newSubdomains {
+			fmt.Println(subdomain)
+		}
+		// Notify user via Discord webhook if provided
+		if cfg.Webhook != "" {
+			go sendDiscordNotification(newSubdomains)
+		}
 	}
 }
 
