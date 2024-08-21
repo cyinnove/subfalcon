@@ -1,4 +1,4 @@
-module github.com/h0tak88r/subfalcon
+module github.com/cyinnove/subfalcon
 
 go 1.16
 
