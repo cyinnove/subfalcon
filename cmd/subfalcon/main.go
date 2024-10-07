@@ -4,8 +4,8 @@ import (
 	"flag"
 	"log"
 
-	"github.com/h0tak88r/subfalcon/config"
-	"github.com/h0tak88r/subfalcon/runner"
+	"github.com/cyinnove/subfalcon/config"
+	"github.com/cyinnove/subfalcon/runner"
 	_ "github.com/mattn/go-sqlite3"
 )
 

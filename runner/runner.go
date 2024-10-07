@@ -11,9 +11,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/h0tak88r/subfalcon/config"
-	"github.com/h0tak88r/subfalcon/pkg/db"
-	"github.com/h0tak88r/subfalcon/pkg/sub88r"
+	"github.com/cyinnove/subfalcon/config"
+	"github.com/cyinnove/subfalcon/pkg/db"
+	"github.com/cyinnove/subfalcon/pkg/sub88r"
 )
 
 var cfg = config.GetConfig()
